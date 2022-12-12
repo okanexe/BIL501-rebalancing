@@ -1,0 +1,596 @@
+/Users/okan-innology/Desktop/pythonProject/spark-tutorial/bin/python /Users/okan-innology/Desktop/pythonProject/main.py
+22/12/12 18:36:19 WARN Utils: Your hostname, okan-innology-MacBook-Pro.local resolves to a loopback address: 127.0.0.1; using 192.168.1.28 instead (on interface en0)
+22/12/12 18:36:19 WARN Utils: Set SPARK_LOCAL_IP if you need to bind to another address
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+22/12/12 18:36:19 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+26566105
+root
+ |-- ride_id: string (nullable = true)
+ |-- started_at: string (nullable = true)
+ |-- ended_at: string (nullable = true)
+ |-- start_station_name: string (nullable = true)
+ |-- start_station_id: string (nullable = true)
+ |-- end_station_name: string (nullable = true)
+ |-- end_station_id: string (nullable = true)
+ |-- start_lat: string (nullable = true)
+ |-- start_lng: string (nullable = true)
+ |-- end_lat: string (nullable = true)
+ |-- end_lng: string (nullable = true)
+
+raw dataset:
++----------------+-------------------+-------------------+--------------------+----------------+--------------------+--------------+---------+----------+-----------------+------------------+
+|         ride_id|         started_at|           ended_at|  start_station_name|start_station_id|    end_station_name|end_station_id|start_lat| start_lng|          end_lat|           end_lng|
++----------------+-------------------+-------------------+--------------------+----------------+--------------------+--------------+---------+----------+-----------------+------------------+
+|BBA33D73DECE976F|2021-02-26 16:38:54|2021-02-26 16:44:37|  E 84 St & Park Ave|         7243.04|     E 78 St & 2 Ave|       7057.07|40.778626| -73.95772|       40.7727966|      -73.95577801|
+|B63D7AFF9AC5B6D4|2021-02-17 11:09:11|2021-02-17 11:26:47|Macon St & Nostra...|         4214.03| Bond St & Fulton St|       4479.06|40.680983|-73.950047|40.68962188790333|-73.98304268717766|
+|52B829195C469D99|2021-02-26 18:33:29|2021-02-26 19:05:41|Macon St & Nostra...|         4214.03|Lefferts Pl & Fra...|       4222.02|40.680983|-73.950047|     40.680342423|    -73.9557689392|
+|19C84ECA2B468476|2021-02-26 12:48:35|2021-02-26 13:07:24|Macon St & Nostra...|         4214.03| Bond St & Fulton St|       4479.06|40.680983|-73.950047|40.68962188790333|-73.98304268717766|
+|C0DDB771E70D9DF5|2021-02-25 17:23:22|2021-02-25 17:28:20|Madison Ave & E 2...|         6131.12|     W 37 St & 5 Ave|       6398.06|40.742685|-73.986713|         40.75038|         -73.98339|
+|BEACBA505A3F6979|2021-02-24 17:22:21|2021-02-24 17:28:01|Madison Ave & E 2...|         6131.12|     W 37 St & 5 Ave|       6398.06|40.742685|-73.986713|         40.75038|         -73.98339|
+|83EFEF3B0CB1C657|2021-02-21 18:11:54|2021-02-21 18:26:19|  E 84 St & Park Ave|         7243.04|     E 47 St & 1 Ave|       6498.09|40.778626| -73.95772|      40.75206862|      -73.96784384|
+|20A3DC6584692A88|2021-02-17 18:46:55|2021-02-17 18:51:51|     W 29 St & 9 Ave|         6416.06|     W 20 St & 7 Ave|       6182.02|40.750072|-73.998392|      40.74238787|      -73.99726235|
+|BFD4BFA83504DAC8|2021-02-26 14:57:23|2021-02-26 14:59:28|Frederick Douglas...|         7631.23|Frederick Douglas...|       7688.12|40.801694|-73.957145|        40.805159|        -73.954692|
+|90EEFBA24EE78A1E|2021-02-27 16:38:43|2021-02-27 17:23:35|Frederick Douglas...|         7631.23|Frederick Douglas...|       7688.12|40.801694|-73.957145|        40.805159|        -73.954692|
++----------------+-------------------+-------------------+--------------------+----------------+--------------------+--------------+---------+----------+-----------------+------------------+
+only showing top 10 rows
+
++-------+----------------+-------------------+-------------------+--------------------+------------------+-----------------+------------------+--------------------+-------------------+-------------------+--------------------+
+|summary|         ride_id|         started_at|           ended_at|  start_station_name|  start_station_id| end_station_name|    end_station_id|           start_lat|          start_lng|            end_lat|             end_lng|
++-------+----------------+-------------------+-------------------+--------------------+------------------+-----------------+------------------+--------------------+-------------------+-------------------+--------------------+
+|  count|        26566105|           26566105|           26566105|            26565613|          26565613|         26470091|          26470091|            26566105|           26566105|           26505762|            26505762|
+|   mean|        Infinity|               null|               null|   4455.099999999999| 6027.071303857264|4455.099999999999|  6019.73136545412|   40.74033180933416| -73.97604870989464| 40.740079229255734|  -73.97616726351347|
+| stddev|             NaN|               null|               null|                 0.0|1069.1710618860325|              0.0|1067.5036707635818|0.038068326262159606|0.02487762161602319|0.03797999053813612|0.024905479625495153|
+|    min|000001291A7A9778|2021-02-01 00:04:23|2021-02-01 00:09:27|    1 Ave & E 110 St|           2733.03| 1 Ave & E 110 St|           2733.03|           40.604017|          -73.88145|          40.604017|              -73.88|
+|    max|FFFFFFDACD93D87C|2021-12-31 23:59:46|2022-03-22 21:18:27|Yankee Ferry Term...|            SYS052|          York St|            SYS052|            40.88226|          -74.03571|           40.88226|         -74.0836394|
++-------+----------------+-------------------+-------------------+--------------------+------------------+-----------------+------------------+--------------------+-------------------+-------------------+--------------------+
+
+There were 1,636 active start stations
+There were 1,707 active end stations
+There was total 1,707 active stations.
+There was average 79,778.09 rides per day
+Each station served 1,445.52 rides per month
++-------------------+----------+-----------+----------+
+|         started_at|start_year|start_month|start_hour|
++-------------------+----------+-----------+----------+
+|2021-02-26 16:38:54|      2021|          2|        16|
+|2021-02-17 11:09:11|      2021|          2|        11|
+|2021-02-26 18:33:29|      2021|          2|        18|
+|2021-02-26 12:48:35|      2021|          2|        12|
+|2021-02-25 17:23:22|      2021|          2|        17|
+|2021-02-24 17:22:21|      2021|          2|        17|
+|2021-02-21 18:11:54|      2021|          2|        18|
+|2021-02-17 18:46:55|      2021|          2|        18|
+|2021-02-26 14:57:23|      2021|          2|        14|
+|2021-02-27 16:38:43|      2021|          2|        16|
+|2021-02-08 10:36:20|      2021|          2|        10|
+|2021-02-23 16:28:09|      2021|          2|        16|
+|2021-02-04 14:46:40|      2021|          2|        14|
+|2021-02-13 06:32:53|      2021|          2|         6|
+|2021-02-25 22:38:30|      2021|          2|        22|
+|2021-02-24 19:07:20|      2021|          2|        19|
+|2021-02-17 14:03:30|      2021|          2|        14|
+|2021-02-24 23:16:52|      2021|          2|        23|
+|2021-02-21 17:12:53|      2021|          2|        17|
+|2021-02-27 22:20:57|      2021|          2|        22|
++-------------------+----------+-----------+----------+
+only showing top 20 rows
+
++----------+--------------+
+|start_hour|count(ride_id)|
++----------+--------------+
+|         0|        391396|
+|         1|        243159|
+|         2|        160699|
+|         3|        101108|
+|         4|         82777|
+|         5|        167278|
+|         6|        495089|
+|         7|        953779|
+|         8|       1407636|
+|         9|       1234838|
+|        10|       1195346|
+|        11|       1354778|
+|        12|       1556149|
+|        13|       1658025|
+|        14|       1786434|
+|        15|       1891728|
+|        16|       2048344|
+|        17|       2379834|
+|        18|       2312846|
+|        19|       1772860|
++----------+--------------+
+only showing top 20 rows
+
++--------------------------+--------------+--------------------+-----+
+|date_trunc(hour, ended_at)|end_station_id|    end_station_name|count|
++--------------------------+--------------+--------------------+-----+
+|       2021-02-26 12:00:00|       4228.02|Fulton St & Utica...|    3|
+|       2021-02-16 19:00:00|       6948.10|  Broadway & W 58 St|    8|
+|       2021-02-10 10:00:00|       6969.08|E 66 St & Madison...|    2|
+|       2021-02-13 23:00:00|       7484.05|W 87 St & West En...|    1|
+|       2021-02-26 18:00:00|       6278.04|       44 Dr & 21 St|    3|
+|       2021-02-27 00:00:00|       5616.01|   E 9 St & Avenue C|    2|
+|       2021-02-08 20:00:00|       7098.05|       27 Ave & 9 St|    1|
+|       2021-02-28 12:00:00|       4199.12|Carlton Ave & Dea...|    3|
+|       2021-02-26 17:00:00|       5359.10|Hudson St & Reade St|    8|
+|       2021-02-10 15:00:00|       5971.08|     E 20 St & 2 Ave|    8|
+|       2021-02-24 09:00:00|       5971.08|     E 20 St & 2 Ave|    6|
+|       2021-02-15 11:00:00|       5359.10|Hudson St & Reade St|    1|
+|       2021-02-22 17:00:00|       5553.10|   E 2 St & Avenue A|    7|
+|       2021-02-20 21:00:00|       5553.10|   E 2 St & Avenue A|    2|
+|       2021-02-25 08:00:00|       7646.04|W 110 St & Amster...|    5|
+|       2021-02-09 11:00:00|       3803.09|        6 Ave & 9 St|    1|
+|       2021-02-06 19:00:00|       6289.06|  Broadway & W 29 St|    5|
+|       2021-02-03 21:00:00|       6551.02|     W 44 St & 5 Ave|    2|
+|       2021-02-14 14:00:00|       6551.02|     W 44 St & 5 Ave|    1|
+|       2021-02-11 07:00:00|       6182.02|     W 20 St & 7 Ave|    3|
++--------------------------+--------------+--------------------+-----+
+only showing top 20 rows
+
+22/12/12 18:39:54 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
++----------------------------+----------------+--------------------+-----+
+|date_trunc(hour, started_at)|start_station_id|  start_station_name|count|
++----------------------------+----------------+--------------------+-----+
+|         2021-02-17 11:00:00|         4214.03|Macon St & Nostra...|    1|
+|         2021-02-17 13:00:00|         5515.02|   E 2 St & Avenue B|    6|
+|         2021-02-24 20:00:00|         5267.08|Grand St & Haveme...|    5|
+|         2021-02-09 06:00:00|         7727.07|Amsterdam Ave & W...|    2|
+|         2021-02-15 23:00:00|         6854.05|     W 50 St & 9 Ave|    2|
+|         2021-02-06 17:00:00|         6230.04| FDR Drive & E 35 St|   10|
+|         2021-02-25 14:00:00|         6055.08|  E 20 St & Park Ave|    9|
+|         2021-02-05 15:00:00|         5636.11|      Great Jones St|    9|
+|         2021-02-24 17:00:00|         5414.06|Allen St & Riving...|   13|
+|         2021-02-27 17:00:00|         6140.05|     W 21 St & 6 Ave|   23|
+|         2021-02-24 13:00:00|         5303.08|Canal St & Rutger...|    6|
+|         2021-02-24 11:00:00|         7587.14|E 110 St & Madiso...|    1|
+|         2021-02-23 18:00:00|         5779.09|  E 13 St & Avenue A|   19|
+|         2021-02-25 16:00:00|         7974.01|    3 Ave & E 163 St|    2|
+|         2021-02-28 16:00:00|         6004.07|     E 25 St & 1 Ave|    2|
+|         2021-02-21 12:00:00|         5175.08|Fulton St & Broadway|    2|
+|         2021-02-25 08:00:00|         7646.04|W 110 St & Amster...|    3|
+|         2021-02-24 17:00:00|         7567.06|Lexington Ave & E...|    3|
+|         2021-02-09 18:00:00|         6407.07|     W 33 St & 7 Ave|    5|
+|         2021-02-26 13:00:00|         7432.04|W 90 St & Amsterd...|    4|
++----------------------------+----------------+--------------------+-----+
+only showing top 20 rows
+
+-RECORD 0---------------------------------
+ ride_id            | BBA33D73DECE976F
+ started_at         | 2021-02-26 16:38:54
+ ended_at           | 2021-02-26 16:44:37
+ start_station_name | E 84 St & Park Ave
+ start_station_id   | 7243.04
+ end_station_name   | E 78 St & 2 Ave
+ end_station_id     | 7057.07
+ start_lat          | 40.778626
+ start_lng          | -73.95772
+ end_lat            | 40.7727966
+ end_lng            | -73.95577801
+only showing top 1 row
+
+start station id count=>  492
+end station id count=>  96014
+before dropna:  26566105  after dropna:  26470081
+deleted rows:  96024
++----------------+--------------------+------+
+|start_station_id|  start_station_name| count|
++----------------+--------------------+------+
+|         6140.05|     W 21 St & 6 Ave|122214|
+|         5980.07|  E 17 St & Broadway|117873|
+|         5329.03|West St & Chamber...|105747|
+|         6822.09|     1 Ave & E 68 St|105439|
+|         6173.08|  Broadway & W 25 St| 98086|
+|         5492.05|Cleveland Pl & Sp...| 97193|
+|         5905.12|  Broadway & E 14 St| 95270|
+|         6364.07|     6 Ave & W 33 St| 92706|
+|         5184.08|West St & Liberty St| 91848|
+|         5779.09|  E 13 St & Avenue A| 91295|
+|         5763.03|  Carmine St & 6 Ave| 90222|
+|         6912.01|7 Ave & Central P...| 88449|
+|         6876.04|Central Park S & ...| 88087|
+|         5905.14|University Pl & E...| 87526|
+|         6197.08|     E 33 St & 1 Ave| 87230|
+|         6765.01|    12 Ave & W 40 St| 86622|
+|         5382.06|Grand St & Elizab...| 86116|
+|         6266.06|     9 Ave & W 22 St| 85829|
+|         6726.01|    11 Ave & W 41 St| 83541|
+|         5696.03|Pier 40 - Hudson ...| 79789|
++----------------+--------------------+------+
+only showing top 20 rows
+
++--------------+--------------------+------+
+|end_station_id|    end_station_name| count|
++--------------+--------------------+------+
+|       6140.05|     W 21 St & 6 Ave|123168|
+|       5980.07|  E 17 St & Broadway|119998|
+|       5329.03|West St & Chamber...|106504|
+|       6822.09|     1 Ave & E 68 St|105991|
+|       6173.08|  Broadway & W 25 St| 98432|
+|       5492.05|Cleveland Pl & Sp...| 97883|
+|       5905.12|  Broadway & E 14 St| 95094|
+|       6364.07|     6 Ave & W 33 St| 93192|
+|       5184.08|West St & Liberty St| 92497|
+|       5779.09|  E 13 St & Avenue A| 91469|
+|       5763.03|  Carmine St & 6 Ave| 91123|
+|       6912.01|7 Ave & Central P...| 88741|
+|       5905.14|University Pl & E...| 88395|
+|       6876.04|Central Park S & ...| 88021|
+|       6197.08|     E 33 St & 1 Ave| 87392|
+|       5382.06|Grand St & Elizab...| 87188|
+|       6765.01|    12 Ave & W 40 St| 86864|
+|       6266.06|     9 Ave & W 22 St| 86263|
+|       6726.01|    11 Ave & W 41 St| 83812|
+|       5696.03|Pier 40 - Hudson ...| 80832|
++--------------+--------------------+------+
+only showing top 20 rows
+
+Count total number of unique stations:  1706
++----------------+-------------------+-------------------+--------------------+----------------+--------------------+--------------+---------+----------+-----------------+------------------+-------------+
+|         ride_id|         started_at|           ended_at|  start_station_name|start_station_id|    end_station_name|end_station_id|start_lat| start_lng|          end_lat|           end_lng|DiffInSeconds|
++----------------+-------------------+-------------------+--------------------+----------------+--------------------+--------------+---------+----------+-----------------+------------------+-------------+
+|BBA33D73DECE976F|2021-02-26 16:38:54|2021-02-26 16:44:37|  E 84 St & Park Ave|         7243.04|     E 78 St & 2 Ave|       7057.07|40.778626| -73.95772|       40.7727966|      -73.95577801|          343|
+|B63D7AFF9AC5B6D4|2021-02-17 11:09:11|2021-02-17 11:26:47|Macon St & Nostra...|         4214.03| Bond St & Fulton St|       4479.06|40.680983|-73.950047|40.68962188790333|-73.98304268717766|         1056|
+|52B829195C469D99|2021-02-26 18:33:29|2021-02-26 19:05:41|Macon St & Nostra...|         4214.03|Lefferts Pl & Fra...|       4222.02|40.680983|-73.950047|     40.680342423|    -73.9557689392|         1932|
+|19C84ECA2B468476|2021-02-26 12:48:35|2021-02-26 13:07:24|Macon St & Nostra...|         4214.03| Bond St & Fulton St|       4479.06|40.680983|-73.950047|40.68962188790333|-73.98304268717766|         1129|
+|C0DDB771E70D9DF5|2021-02-25 17:23:22|2021-02-25 17:28:20|Madison Ave & E 2...|         6131.12|     W 37 St & 5 Ave|       6398.06|40.742685|-73.986713|         40.75038|         -73.98339|          298|
+|BEACBA505A3F6979|2021-02-24 17:22:21|2021-02-24 17:28:01|Madison Ave & E 2...|         6131.12|     W 37 St & 5 Ave|       6398.06|40.742685|-73.986713|         40.75038|         -73.98339|          340|
+|83EFEF3B0CB1C657|2021-02-21 18:11:54|2021-02-21 18:26:19|  E 84 St & Park Ave|         7243.04|     E 47 St & 1 Ave|       6498.09|40.778626| -73.95772|      40.75206862|      -73.96784384|          865|
+|20A3DC6584692A88|2021-02-17 18:46:55|2021-02-17 18:51:51|     W 29 St & 9 Ave|         6416.06|     W 20 St & 7 Ave|       6182.02|40.750072|-73.998392|      40.74238787|      -73.99726235|          296|
+|BFD4BFA83504DAC8|2021-02-26 14:57:23|2021-02-26 14:59:28|Frederick Douglas...|         7631.23|Frederick Douglas...|       7688.12|40.801694|-73.957145|        40.805159|        -73.954692|          125|
+|90EEFBA24EE78A1E|2021-02-27 16:38:43|2021-02-27 17:23:35|Frederick Douglas...|         7631.23|Frederick Douglas...|       7688.12|40.801694|-73.957145|        40.805159|        -73.954692|         2692|
+|1E9DE6C23810BD3E|2021-02-08 10:36:20|2021-02-08 11:00:49|     E 53 St & 3 Ave|         6617.02|Mercer St & Sprin...|       5532.01|40.757632|-73.969305|      40.72362738|      -73.99949601|         1469|
+|5C13699A1FC152E2|2021-02-23 16:28:09|2021-02-23 16:47:11|     W 17 St & 8 Ave|         6148.02|     W 18 St & 9 Ave|       6190.03|40.741776|-74.001497| 40.7435337324616|-74.00367558002472|         1142|
+|307261E4E63767CC|2021-02-04 14:46:40|2021-02-04 14:56:01|     W 29 St & 9 Ave|         6416.06|Perry St & Greenw...|       5955.12|40.750073|-73.998393|        40.735918|        -74.000939|          561|
+|9473E2FA6A553E17|2021-02-13 06:32:53|2021-02-13 06:44:55|     W 17 St & 8 Ave|         6148.02|Mercer St & Sprin...|       5532.01|40.741776|-74.001497|      40.72362738|      -73.99949601|          722|
+|88D2E6B73D3E22D4|2021-02-25 22:38:30|2021-02-25 22:40:18|     W 17 St & 8 Ave|         6148.02|     W 18 St & 9 Ave|       6190.03|40.741776|-74.001497|        40.743534|        -74.003676|          108|
+|2AB863AED0F3CBDF|2021-02-24 19:07:20|2021-02-24 19:20:01|Canal St & Rutger...|         5303.08|Rivington St & Ri...|       5406.02|40.714275|  -73.9899|        40.718502|        -73.983299|          761|
+|E823DCF64CEC39CA|2021-02-17 14:03:30|2021-02-17 14:07:28|Canal St & Rutger...|         5303.08|Rivington St & Ri...|       5406.02|40.714275|  -73.9899|        40.718502|        -73.983299|          238|
+|44F9C7C244377418|2021-02-24 23:16:52|2021-02-24 23:20:03|Grand St & Elizab...|         5382.06|St James Pl & Oli...|       5238.05|40.718822| -73.99596|        40.713079|        -73.998512|          191|
+|0763750FE82CE7AE|2021-02-21 17:12:53|2021-02-21 17:23:06|     E 56 St & 3 Ave|         6691.11|Lexington Ave & E...|       6313.10|40.759345|-73.967597|        40.747574|        -73.978801|          613|
+|385FF32E2D759BCA|2021-02-27 22:20:57|2021-02-27 22:24:02|Canal St & Rutger...|         5303.08|Stanton St & Norf...|       5445.07|40.714274|  -73.9899|        40.720747|        -73.986274|          185|
++----------------+-------------------+-------------------+--------------------+----------------+--------------------+--------------+---------+----------+-----------------+------------------+-------------+
+only showing top 20 rows
+
+Calculate average time of single rental(minute):
++-----------------+
+|          average|
++-----------------+
+|19.05013177882117|
++-----------------+
+
+Find stations with the most traffic between them:
++------------------+-----+
+|             route|count|
++------------------+-----+
+|[6876.04, 6876.04]|12922|
++------------------+-----+
+only showing top 1 row
+
+Show stations from route above:
++-------------------+
+|start_station_name |
++-------------------+
+|St Marks Pl & 2 Ave|
+|St Marks Pl & 1 Ave|
++-------------------+
+
+Find rush hour:
++----+-------+
+|hour|  count|
++----+-------+
+|  17|2379834|
+|  18|2312846|
+|  16|2048344|
+|  15|1891728|
+|  14|1786434|
+|  19|1772860|
+|  13|1658025|
++----+-------+
+only showing top 7 rows
+
+Find rush day:
++---+-------+
+|day|  count|
++---+-------+
+|  4|3987796|
+|  6|3954162|
+|  7|3937922|
+|  3|3880361|
+|  5|3875335|
+|  2|3538511|
+|  1|3392018|
++---+-------+
+
+Find rush months:
++-----+-------+
+|month|  count|
++-----+-------+
+|    9|3280560|
+|    6|3178081|
+|    7|3084914|
+|    8|3072833|
+|   10|3069235|
+|    5|2724165|
+|   11|2159284|
++-----+-------+
+only showing top 7 rows
+
+Find average rentals grouped by weekday
++-------+-----------------+
+|weekday|          avg_use|
++-------+-----------------+
+|    Sun|72170.59574468085|
+|    Mon|73718.97916666667|
+|    Thu|80736.14583333333|
+|    Fri|        82378.375|
+|    Tue|82560.87234042553|
+|    Wed|83079.08333333333|
+|    Sat| 83785.5744680851|
++-------+-----------------+
+
+find distance between start and end station as haversine:
++----------------+-------------------+-------------------+----------------------------------+----------------+----------------------------------+--------------+---------+----------+-----------------+------------------+-------------+------------------+
+|ride_id         |started_at         |ended_at           |start_station_name                |start_station_id|end_station_name                  |end_station_id|start_lat|start_lng |end_lat          |end_lng           |DiffInSeconds|haversine_dist    |
++----------------+-------------------+-------------------+----------------------------------+----------------+----------------------------------+--------------+---------+----------+-----------------+------------------+-------------+------------------+
+|BBA33D73DECE976F|2021-02-26 16:38:54|2021-02-26 16:44:37|E 84 St & Park Ave                |7243.04         |E 78 St & 2 Ave                   |7057.07       |40.778626|-73.95772 |40.7727966       |-73.95577801      |343          |2195.6198289822364|
+|B63D7AFF9AC5B6D4|2021-02-17 11:09:11|2021-02-17 11:26:47|Macon St & Nostrand Ave           |4214.03         |Bond St & Fulton St               |4479.06       |40.680983|-73.950047|40.68962188790333|-73.98304268717766|1056         |9666.973842027357 |
+|52B829195C469D99|2021-02-26 18:33:29|2021-02-26 19:05:41|Macon St & Nostrand Ave           |4214.03         |Lefferts Pl & Franklin Ave        |4222.02       |40.680983|-73.950047|40.680342423     |-73.9557689392    |1932         |1601.8882073118943|
+|19C84ECA2B468476|2021-02-26 12:48:35|2021-02-26 13:07:24|Macon St & Nostrand Ave           |4214.03         |Bond St & Fulton St               |4479.06       |40.680983|-73.950047|40.68962188790333|-73.98304268717766|1129         |9666.973842027357 |
+|C0DDB771E70D9DF5|2021-02-25 17:23:22|2021-02-25 17:28:20|Madison Ave & E 26 St             |6131.12         |W 37 St & 5 Ave                   |6398.06       |40.742685|-73.986713|40.75038         |-73.98339         |298          |2956.8193578698992|
+|BEACBA505A3F6979|2021-02-24 17:22:21|2021-02-24 17:28:01|Madison Ave & E 26 St             |6131.12         |W 37 St & 5 Ave                   |6398.06       |40.742685|-73.986713|40.75038         |-73.98339         |340          |2956.8193578698992|
+|83EFEF3B0CB1C657|2021-02-21 18:11:54|2021-02-21 18:26:19|E 84 St & Park Ave                |7243.04         |E 47 St & 1 Ave                   |6498.09       |40.778626|-73.95772 |40.75206862      |-73.96784384      |865          |10095.016907460711|
+|20A3DC6584692A88|2021-02-17 18:46:55|2021-02-17 18:51:51|W 29 St & 9 Ave                   |6416.06         |W 20 St & 7 Ave                   |6182.02       |40.750072|-73.998392|40.74238787      |-73.99726235      |296          |2823.625852716596 |
+|BFD4BFA83504DAC8|2021-02-26 14:57:23|2021-02-26 14:59:28|Frederick Douglass Blvd & W 112 St|7631.23         |Frederick Douglass Blvd & W 117 St|7688.12       |40.801694|-73.957145|40.805159        |-73.954692        |125          |1435.6729877753353|
+|90EEFBA24EE78A1E|2021-02-27 16:38:43|2021-02-27 17:23:35|Frederick Douglass Blvd & W 112 St|7631.23         |Frederick Douglass Blvd & W 117 St|7688.12       |40.801694|-73.957145|40.805159        |-73.954692        |2692         |1435.6729877753353|
+|1E9DE6C23810BD3E|2021-02-08 10:36:20|2021-02-08 11:00:49|E 53 St & 3 Ave                   |6617.02         |Mercer St & Spring St             |5532.01       |40.757632|-73.969305|40.72362738      |-73.99949601      |1469         |14967.006134114401|
+|5C13699A1FC152E2|2021-02-23 16:28:09|2021-02-23 16:47:11|W 17 St & 8 Ave                   |6148.02         |W 18 St & 9 Ave                   |6190.03       |40.741776|-74.001497|40.7435337324616 |-74.00367558002472|1142         |880.595646810765  |
+|307261E4E63767CC|2021-02-04 14:46:40|2021-02-04 14:56:01|W 29 St & 9 Ave                   |6416.06         |Perry St & Greenwich Ave          |5955.12       |40.750073|-73.998393|40.735918        |-74.000939        |561          |5217.24012992015  |
+|9473E2FA6A553E17|2021-02-13 06:32:53|2021-02-13 06:44:55|W 17 St & 8 Ave                   |6148.02         |Mercer St & Spring St             |5532.01       |40.741776|-74.001497|40.72362738      |-73.99949601      |722          |6651.03811883945  |
+|88D2E6B73D3E22D4|2021-02-25 22:38:30|2021-02-25 22:40:18|W 17 St & 8 Ave                   |6148.02         |W 18 St & 9 Ave                   |6190.03       |40.741776|-74.001497|40.743534        |-74.003676        |108          |880.7464188753825 |
+|2AB863AED0F3CBDF|2021-02-24 19:07:20|2021-02-24 19:20:01|Canal St & Rutgers St             |5303.08         |Rivington St & Ridge St           |5406.02       |40.714275|-73.9899  |40.718502        |-73.983299        |761          |2392.0064732662277|
+|E823DCF64CEC39CA|2021-02-17 14:03:30|2021-02-17 14:07:28|Canal St & Rutgers St             |5303.08         |Rivington St & Ridge St           |5406.02       |40.714275|-73.9899  |40.718502        |-73.983299        |238          |2392.0064732662277|
+|44F9C7C244377418|2021-02-24 23:16:52|2021-02-24 23:20:03|Grand St & Elizabeth St           |5382.06         |St James Pl & Oliver St           |5238.05       |40.718822|-73.99596 |40.713079        |-73.998512        |191          |2213.133840175622 |
+|0763750FE82CE7AE|2021-02-21 17:12:53|2021-02-21 17:23:06|E 56 St & 3 Ave                   |6691.11         |Lexington Ave & E 36 St           |6313.10       |40.759345|-73.967597|40.747574        |-73.978801        |613          |5299.7483271608635|
+|385FF32E2D759BCA|2021-02-27 22:20:57|2021-02-27 22:24:02|Canal St & Rutgers St             |5303.08         |Stanton St & Norfolk St           |5445.07       |40.714274|-73.9899  |40.720747        |-73.986274        |185          |2568.2097921108902|
++----------------+-------------------+-------------------+----------------------------------+----------------+----------------------------------+--------------+---------+----------+-----------------+------------------+-------------+------------------+
+only showing top 20 rows
+
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:22 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:23 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:24 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:25 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:25 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:25 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:42:25 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
++----------+--------+
+|      date|n_routes|
++----------+--------+
+|01.02.2021|     199|
+|10.06.2021|   59365|
+|20.02.2021|   16824|
+|23.11.2021|   34554|
+|01.12.2021|   40499|
+|13.11.2021|   38646|
+|07.07.2021|   52524|
+|14.07.2021|   55445|
+|03.03.2021|   30120|
+|26.03.2021|   41010|
+|09.06.2021|   55864|
+|18.03.2021|   15825|
+|10.03.2021|   32880|
+|13.09.2021|   53896|
+|01.04.2021|   27535|
+|17.06.2021|   59952|
+|24.03.2021|   22386|
+|05.10.2021|   53476|
+|17.11.2021|   45460|
+|17.12.2021|   41869|
++----------+--------+
+only showing top 20 rows
+
+hourly trip count and unique route count:
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:01 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:02 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:03 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:04 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
+22/12/12 18:43:05 WARN RowBasedKeyValueBatch: Calling spill() on RowBasedKeyValueBatch. Will not spill but return 0.
++----------------+-------+--------+
+|            date|n_trips|n_routes|
++----------------+-------+--------+
+|01.02.2021 00:00|     41|      38|
+|01.02.2021 01:00|     26|      25|
+|01.02.2021 02:00|     15|      15|
+|01.02.2021 03:00|      7|       7|
+|01.02.2021 04:00|     15|      15|
+|01.02.2021 05:00|     53|      32|
+|01.02.2021 06:00|     86|      64|
+|01.02.2021 07:00|      6|       6|
+|01.03.2021 00:00|    132|     127|
+|01.03.2021 01:00|     78|      76|
+|01.03.2021 02:00|     54|      53|
+|01.03.2021 03:00|     34|      34|
+|01.03.2021 04:00|     56|      53|
+|01.03.2021 05:00|    235|     228|
+|01.03.2021 06:00|    691|     610|
+|01.03.2021 07:00|   1142|    1060|
+|01.03.2021 08:00|   2165|    2061|
+|01.03.2021 09:00|   1871|    1776|
+|01.03.2021 10:00|   1472|    1395|
+|01.03.2021 11:00|   1617|    1504|
++----------------+-------+--------+
+only showing top 20 rows
+
+
+Process finished with exit code 0
