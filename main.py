@@ -103,6 +103,7 @@ def prepare_dataset_to_ML(data):
     return bike_df_full
 
 
+# this function is experimental. does not give successful results
 def lr(dt):
     bike_dt = prepare_dataset_to_ML(dt)
     bike_dt = bike_dt.drop("ride_id", "start_station_name", "end_station_name", "started_at", "ended_at")
